@@ -1,0 +1,5 @@
+Reads lines from stdin containing <nrk program page> <output location> pairs.
+
+E.g.
+
+http://www.nrk.no/nett-tv/prosjekt/1386/ /home/asmundg/media/Drømmehagen
