@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import cookielib
+import logging
 import os
 import optparse
 import re
@@ -68,16 +69,16 @@ class NRKRipper(object):
         return sources
 
     def search_and_rip(self, url, output_dir):
-        if not os.path.exists(output_dir):
+        if not os.path.exists(output_dir.encode('utf-8')):
             os.makedirs(output_dir)
         for name, href in self.list_project(url):
             name = self.fix_stupid_dates(name)
             output_name = os.path.join(output_dir, name + '.wmv')
-            if not os.path.exists(output_name):
+            if not os.path.exists(output_name.encode('utf-8')):
                 source = self.rip_program('http://www.nrk.no' + href)
-                print "Ripping %s => %s" % (source, output_name)
+                logging.info(u"Ripping %s => %s", source, output_name)
                 proc = subprocess.Popen(['mplayer', '-dumpstream', '-dumpfile',
-                                         output_name, source])
+                                         output_name.encode('utf-8'), source.encode('utf-8')])
                 proc.wait()
                 os.chmod(output_name,
                          stat.S_IRUSR
@@ -100,8 +101,13 @@ def rip_all(source):
 
     for line in source:
         url, output_dir = line.decode('utf-8').strip().split(' ', 1)
+        logging.info(u"Searching %s", url)
         ripper.search_and_rip(url, output_dir)
    
 if __name__ == '__main__':
+    logging.basicConfig(
+        level = logging.INFO,
+        format = "%(asctime)s %(name)s %(levelname)s %(message)s")
+
     import sys
     rip_all(sys.stdin)
