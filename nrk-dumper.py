@@ -80,7 +80,7 @@ class NRKRipper(object):
                 proc = subprocess.Popen(['mplayer', '-dumpstream', '-dumpfile', '-forceidx',
                                          output_name.encode('utf-8'), source.encode('utf-8')])
                 proc.wait()
-                os.chmod(output_name,
+                os.chmod(output_name.encode('utf-8'),
                          stat.S_IRUSR
                          | stat.S_IWUSR 
                          | stat.S_IRGRP
