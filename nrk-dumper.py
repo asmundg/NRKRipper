@@ -77,7 +77,7 @@ class NRKRipper(object):
             if not os.path.exists(output_name.encode('utf-8')):
                 source = self.rip_program('http://www.nrk.no' + href)
                 logging.info(u"Ripping %s => %s", source, output_name)
-                proc = subprocess.Popen(['mplayer', '-dumpstream', '-dumpfile',
+                proc = subprocess.Popen(['mplayer', '-dumpstream', '-dumpfile', '-forceidx',
                                          output_name.encode('utf-8'), source.encode('utf-8')])
                 proc.wait()
                 os.chmod(output_name,
