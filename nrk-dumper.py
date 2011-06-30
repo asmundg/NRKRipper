@@ -100,7 +100,12 @@ def rip_all(source):
     ripper = NRKRipper()
 
     for line in source:
-        url, output_dir = line.decode('utf-8').strip().split(' ', 1)
+        line = line.decode('utf-8').strip()
+        if not line or line.startswith('#'):
+            continue
+
+        logging.info("Line: %s", line)
+        url, output_dir = line.split(' ', 1)
         logging.info(u"Searching %s", url)
         ripper.search_and_rip(url, output_dir)
    
