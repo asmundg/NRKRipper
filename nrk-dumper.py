@@ -14,11 +14,13 @@ import mechanize
 class NRKRipper(object):
     movie_object_url = 'string(//object[@id="ctl00_ucPlayer_Player"]/@url[1])'
     asx_mms_url = 'string(//entry/ref[1]/@href)'
-    program_page_links = '//div[@id="dyn-navigation"]//a'
+    program_page_links = '//div[@id="dyn-navigation"]//a[@class="icon-video-black indexPadding"]'
+    program_subpage_links = '//div[@id="dyn-navigation"]//a[@class="icon-closed-black"]/@href'
 
     def __init__(self):
         self.browser = mechanize.Browser()
         self.browser.set_cookiejar(self.make_cookiejar())
+        self.visited_program_pages = {}
 
     def make_cookiejar(self):
         """
@@ -56,12 +58,23 @@ class NRKRipper(object):
         return asx.xpath(self.asx_mms_url)
 
     def list_project(self, url):
+        logging.info("Looking for clips at %s", url)
+
         self.browser.open(url)
         response_data = self.browser.response().read()
         response = etree.HTML(response_data)
         links = response.xpath(self.program_page_links)
-
+        sublinks = response.xpath(self.program_subpage_links)
+        
         sources = []
+        for sublink in sublinks:
+            if sublink not in self.visited_program_pages:
+                self.visited_program_pages[sublink] = 1
+                sources.extend(self.list_project('http://www.nrk.no' + sublink))
+            else:
+                # Already visited
+                pass
+
         for link in links:
             name = link.xpath('string(./text())')
             href = link.xpath('string(./@href)')
@@ -87,7 +100,7 @@ class NRKRipper(object):
                          | stat.S_IROTH)
 
     def fix_stupid_dates(self, name):
-        pattern = '(.*)([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'
+        pattern = '(.*)([0-9]{2})\.([0-9]{2})\.([0-9]+)$'
         match = re.match(pattern, name)
         if match is None:
             return name
