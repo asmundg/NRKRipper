@@ -14,7 +14,7 @@ import mechanize
 class NRKRipper(object):
     movie_object_url = 'string(//object[@id="ctl00_ucPlayer_Player"]/@url[1])'
     asx_mms_url = 'string(//entry/ref[1]/@href)'
-    program_page_links = '//div[@id="dyn-navigation"]//a[@class="icon-video-black indexPadding"]'
+    program_page_links = '//div[@id="dyn-navigation"]//a[@class="icon-video-black" or @class="icon-video-black indexPadding"]'
     program_subpage_links = '//div[@id="dyn-navigation"]//a[@class="icon-closed-black"]/@href'
 
     def __init__(self):
